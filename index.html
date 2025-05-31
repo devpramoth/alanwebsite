@@ -3,95 +3,124 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="English-speaking handyman services in Berlin. Reliable, affordable and fast. Call +49 1521 0743369 for trusted home repairs." />
-  <meta name="keywords" content="handyman berlin, english speaking handyman, home repair berlin, berlin handyman services" />
-  <title>English Handyman Berlin | Reliable, Affordable Services</title>
+  <meta name="description" content="English-speaking handyman services in Berlin. Calm, professional, and clear. Contact us for trusted home repair services." />
+  <title>English Handyman Berlin</title>
   <style>
+    :root {
+      --accent: #0057a0;
+      --whatsapp-green: #25D366;
+      --text: #111;
+      --gray: #555;
+      --light-gray: #f5f5f5;
+    }
+
     body {
       margin: 0;
-      font-family: 'Segoe UI', Tahoma, sans-serif;
-      background-color: #f4f4f4;
-      color: #222;
-      line-height: 1.6;
+      font-family: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+      background: #ffffff;
+      color: var(--text);
+      font-size: 17px;
+      line-height: 1.65;
     }
 
     header {
-      background-color: #0066cc;
-      color: white;
-      padding: 2rem 1rem;
       text-align: center;
+      padding: 4rem 1rem 2.5rem;
+    }
+
+    header img {
+      max-width: 220px;
+      margin-bottom: 1rem;
     }
 
     header h1 {
-      margin: 0;
-      font-size: 2.5rem;
+      font-size: 2.2rem;
+      font-weight: 600;
+      margin: 0.5rem 0;
     }
 
     header p {
-      font-size: 1.2rem;
-      margin-top: 0.5rem;
+      font-size: 1.05rem;
+      color: var(--gray);
+      margin: 0.5rem 0 0;
     }
 
-    .container {
-      max-width: 800px;
-      margin: auto;
-      padding: 2rem 1rem;
-    }
-
-    h2 {
-      color: #0066cc;
-      margin-top: 2rem;
-    }
-
-    ul {
-      padding-left: 1.5rem;
-    }
-
-    .contact-box {
-      background: #eaf4ff;
-      padding: 1.5rem;
-      border-radius: 8px;
+    .contact-block {
       text-align: center;
       margin-top: 2rem;
     }
 
-    .contact-box p {
-      font-size: 1.2rem;
-      font-weight: bold;
-      color: #0066cc;
+    .contact-block p {
+      margin: 0.2rem 0;
+      font-size: 1.05rem;
+    }
+
+    .phone-link {
+      color: var(--accent);
+      text-decoration: none;
+      font-weight: 500;
     }
 
     .whatsapp-button {
       display: inline-block;
-      background-color: #25D366;
+      margin-top: 1.2rem;
+      background-color: var(--whatsapp-green);
       color: white;
-      padding: 0.8rem 1.5rem;
-      font-size: 1.1rem;
-      font-weight: bold;
-      border-radius: 6px;
       text-decoration: none;
-      margin-top: 1rem;
-      transition: background-color 0.3s ease;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      border-radius: 5px;
+      transition: background 0.2s ease;
     }
 
     .whatsapp-button:hover {
       background-color: #1ebe5d;
     }
 
-    footer {
+    .container {
+      max-width: 620px;
+      margin: 3rem auto;
+      padding: 0 1rem;
+    }
+
+    h2 {
+      font-size: 1.2rem;
+      font-weight: 600;
+      margin-bottom: 0.5rem;
+      color: var(--text);
+    }
+
+    ul {
+      padding-left: 1.2rem;
+      margin-top: 0.2rem;
+    }
+
+    ul li {
+      margin-bottom: 0.4rem;
+    }
+
+    .footer {
       text-align: center;
       font-size: 0.9rem;
-      padding: 1rem;
-      color: #666;
+      color: #888;
+      padding: 3rem 1rem;
+      border-top: 1px solid #eee;
+      margin-top: 4rem;
     }
 
     @media (max-width: 600px) {
       header h1 {
-        font-size: 2rem;
+        font-size: 1.8rem;
       }
 
-      .container {
-        padding: 1rem;
+      header img {
+        max-width: 160px;
+      }
+
+      .whatsapp-button {
+        width: 100%;
+        box-sizing: border-box;
       }
     }
   </style>
@@ -99,9 +128,23 @@
 <body>
 
   <header>
+    <img src="logo.png" alt="English Handyman Berlin logo" />
     <h1>English Handyman Berlin</h1>
-    <p>Reliable. English-speaking. Affordable handyman services in and around Berlin.</p>
+    <p>Professional handyman services in all areas of Berlin – affordable, clear, reliable, and English-speaking.</p>
   </header>
+
+  <div class="contact-block">
+    <p>Phone / WhatsApp: 
+      <a href="tel:+4915210743369" class="phone-link">+49 1521 0743369</a>
+    </p>
+    <a 
+      class="whatsapp-button" 
+      href="https://wa.me/4915210743369?text=Hi%2C%20I%E2%80%99m%20interested%20in%20handyman%20services%20in%20Berlin." 
+      target="_blank"
+    >
+      Message us on WhatsApp
+    </a>
+  </div>
 
   <div class="container">
     <h2>What We Do</h2>
@@ -109,36 +152,27 @@
       <li>Furniture assembly (IKEA, custom builds)</li>
       <li>Wall mounting – TVs, shelves, art</li>
       <li>Minor plumbing & electrical fixes</li>
-      <li>Home repairs & improvements</li>
-      <li>Expats welcome – we speak English!</li>
+      <li>General home repairs and improvements</li>
+      <li>English-speaking service for Berlin expats</li>
     </ul>
 
     <h2>Why Choose Us</h2>
     <ul>
-      <li>Fast response and flexible appointments</li>
-      <li>Clear communication in English</li>
-      <li>No surprises – honest pricing</li>
-      <li>Trusted by Berlin locals and expats</li>
+      <li>Responsive and punctual</li>
+      <li>Transparent, reasonable pricing</li>
+      <li>Direct communication via WhatsApp</li>
+      <li>Trusted by locals and expats alike</li>
     </ul>
 
-    <div class="contact-box">
-      <p>📞 Call or WhatsApp: +49 1521 0743369</p>
-      <a 
-        class="whatsapp-button" 
-        href="https://wa.me/4915210743369?text=Hi%2C%20I%E2%80%99d%20like%20to%20book%20a%20handyman%20service%20in%20Berlin." 
-        target="_blank"
-      >
-        📲 Book via WhatsApp
-      </a>
-    </div>
-
     <h2>Service Area</h2>
-    <p>We serve Berlin and surrounding areas, including Neukölln, Kreuzberg, Mitte, Friedrichshain, and beyond.</p>
+    <p>
+      We serve all of Berlin – including Neukölln, Kreuzberg, Mitte, Friedrichshain, Charlottenburg, Prenzlauer Berg, and surrounding districts.
+    </p>
   </div>
 
-  <footer>
-    &copy; 2025 English Handyman Berlin. All rights reserved.
-  </footer>
+  <div class="footer">
+    &copy; 2025 English Handyman Berlin · All rights reserved
+  </div>
 
 </body>
 </html>
