@@ -5,10 +5,24 @@ import Button from '../components/Button.astro';
 import { CONTACT, DISTRICTS, HANDYMAN_MINIMUM_HOURS } from '../config';
 import { waLink, WA_DEFAULT } from '../lib/whatsapp';
 import { graph, businessSchema, faqSchema } from '../lib/schema';
+import { getGalleryPhotos } from '../lib/gallery';
 
 const services = (await getCollection('services', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
+
+const serviceThumbs = new Map(services.map((s) => [s.id, getGalleryPhotos(s.id, 1)[0]]));
+
+const highlightPhotos = [
+  'kitchen-fitting-berlin',
+  'bathroom-renovation-berlin',
+  'tiling-berlin',
+  'flooring-parquet-vinyl-berlin',
+  'apartment-renovation-berlin',
+  'painting-decorating-berlin',
+  'drywall-partition-walls-berlin',
+  'electrician-berlin-english',
+].flatMap((slug) => getGalleryPhotos(slug, 1).map((photo) => ({ slug, photo })));
 
 const projects = (await getCollection('projects', ({ data }) => !data.draft && data.featured)).slice(
   0,
@@ -156,19 +170,37 @@ const jsonLd = graph(businessSchema({ catalog }), faqSchema(faqs));
 
     <ul class="mt-12 grid gap-px overflow-hidden rounded-lg bg-ink-200 sm:grid-cols-2 lg:grid-cols-3">
       {
-        services.map((s) => (
-          <li class="bg-white">
-            <a href={`/services/${s.id}/`} class="group flex h-full flex-col p-6 transition-colors hover:bg-ink-50">
-              <h3 class="font-display text-lg font-bold text-ink-950 group-hover:text-accent-700">
-                {s.data.navLabel}
-              </h3>
-              <p class="mt-2.5 text-[0.95rem] leading-relaxed text-ink-600">{s.data.summary}</p>
-              <span class="mt-4 text-sm font-semibold text-accent-700" aria-hidden="true">
-                Read more &rarr;
-              </span>
-            </a>
-          </li>
-        ))
+        services.map((s) => {
+          const thumb = serviceThumbs.get(s.id);
+          return (
+            <li class="bg-white">
+              <a href={`/services/${s.id}/`} class="group flex h-full flex-col transition-colors hover:bg-ink-50">
+                {thumb && (
+                  <picture>
+                    <source srcset={`${thumb.base}-thumb.webp`} type="image/webp" />
+                    <img
+                      src={`${thumb.base}-thumb.jpg`}
+                      alt={thumb.alt}
+                      loading="lazy"
+                      width="640"
+                      height="480"
+                      class="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                    />
+                  </picture>
+                )}
+                <div class="flex flex-1 flex-col p-6">
+                  <h3 class="font-display text-lg font-bold text-ink-950 group-hover:text-accent-700">
+                    {s.data.navLabel}
+                  </h3>
+                  <p class="mt-2.5 text-[0.95rem] leading-relaxed text-ink-600">{s.data.summary}</p>
+                  <span class="mt-4 text-sm font-semibold text-accent-700" aria-hidden="true">
+                    Read more &rarr;
+                  </span>
+                </div>
+              </a>
+            </li>
+          );
+        })
       }
     </ul>
 
@@ -180,6 +212,41 @@ const jsonLd = graph(businessSchema({ catalog }), faqSchema(faqs));
       </a>
     </p>
   </section>
+
+  {/* --------------------------------------------------------- Photo strip */}
+  {
+    highlightPhotos.length > 0 && (
+      <section class="container-page pb-16 lg:pb-24">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <h2 class="font-display text-3xl font-extrabold text-ink-950 lg:text-4xl">
+            Real jobs, real Berlin flats
+          </h2>
+          <a href="/gallery/" class="font-semibold text-accent-700 underline underline-offset-4">
+            See the full gallery
+          </a>
+        </div>
+        <ul class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {highlightPhotos.map(({ slug, photo }) => (
+            <li>
+              <a href={`/gallery/#${slug}`} class="group block overflow-hidden rounded-lg bg-ink-100">
+                <picture>
+                  <source srcset={`${photo.base}-thumb.webp`} type="image/webp" />
+                  <img
+                    src={`${photo.base}-thumb.jpg`}
+                    alt={photo.alt}
+                    loading="lazy"
+                    width="640"
+                    height="640"
+                    class="aspect-square w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </picture>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
 
   {/* ------------------------------------------------------------- Process */}
   <section class="bg-ink-950 text-white">

@@ -1,100 +1,22 @@
 ---
-import { readdirSync } from 'node:fs';
-import path from 'node:path';
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Breadcrumbs from '../components/Breadcrumbs.astro';
 import CtaBand from '../components/CtaBand.astro';
 import { getCollection } from 'astro:content';
 import { graph, businessSchema, breadcrumbSchema } from '../lib/schema';
+import { getGalleryPhotos } from '../lib/gallery';
 
 const services = (await getCollection('services', ({ data }) => !data.draft)).sort(
   (a, b) => a.data.order - b.data.order,
 );
 
-// Alt text per photo, written from what's actually in each shot. Index matches the
-// NN suffix in public/img/gallery/<slug>/<slug>-NN.jpg (1-based).
-const ALT_TEXT: Record<string, string[]> = {
-  'kitchen-fitting-berlin': [
-    'White shaker kitchen with patterned tile splashback and oak worktop, fitted in a Berlin Altbau flat',
-    'Close-up of fitted kitchen units with under-cabinet lighting and tiled splashback',
-    'Duck-egg green fitted kitchen with black and white tiled floor',
-    'White fitted kitchen with black countertop and matching splashback',
-    'Modern kitchen with black countertop, white cabinets and oak flooring',
-  ],
-  'painting-decorating-berlin': [
-    'Freshly painted mustard-yellow room with original Berlin window and radiator',
-    'Room mid-decoration with botanical wallpaper going up',
-    'Close-up of gold dragonfly-pattern wallpaper',
-    "Painter's ladder and dust sheets in a mustard-yellow hallway during decorating work",
-  ],
-  'tiling-berlin': [
-    'New tiled floor being laid, spirit level checking the fall',
-    'Bathroom wall tiling in progress with tile spacers',
-  ],
-  'electrician-berlin-english': [
-    'Electrical socket back box fitted into a plastered wall mid-renovation',
-  ],
-  'drywall-partition-walls-berlin': ['Fitting tongue-and-groove wood wall panelling'],
-  'flooring-parquet-vinyl-berlin': [
-    'Restored herringbone parquet corridor in a Berlin Altbau flat',
-    'Empty room with sanded and refinished parquet flooring',
-    'Wide room with new wood plank flooring',
-    'Bright room with new flooring and full-height window onto a balcony',
-    'Laying new flooring against a textured feature wall',
-    'Self-levelling floor screed poured ahead of new flooring',
-    'Large open room with dark refinished parquet flooring',
-    'Corridor with restored parquet flooring lit by a window',
-    'Patch repair to herringbone parquet flooring',
-    'Freshly cleaned herringbone parquet floor',
-  ],
-  'bathroom-renovation-berlin': [
-    'Finished bathroom with blue and white star-pattern tiled floor',
-    'Waterproof tanking membrane applied to a shower corner before tiling',
-    'Overhead view of a tiled shower floor and drain',
-    'Bathroom wall prepared with cement board and first-fix wiring',
-    'Bathroom mid-demolition with old tiles stripped back',
-    'Exposed pipework during a bathroom first fix',
-    'Waterproof membrane applied in a shower corner ahead of tiling',
-    'Overhead view of a finished bathroom with dark tiling, vanity and toilet',
-    'Finished bathroom with toilet and glass shower screen',
-    'Bathroom stripped back to brick and debris during a renovation',
-    'Small bathroom being painted teal, with a new mirror cabinet fitted and protective tape still up',
-    'Finished bathroom with white metro tiles and bathtub',
-  ],
-  'apartment-renovation-berlin': [
-    'Long hallway with mustard-yellow walls and restored wood flooring',
-    'Barrel-vaulted attic ceiling under construction with scaffold tower',
-    'Room stripped back to original lath and plaster during renovation',
-    'Floor opened up to expose old pipework during a strip-out',
-    'Fitting insulation and wood panelling to an attic ceiling',
-    'Installing panelling in an attic conversion, radiator visible',
-    'Worker on scaffold inside a vaulted attic ceiling during construction',
-    'Old distressed wood and brick wall before renovation',
-    'Room stripped back to bare floorboards and walls before renovation',
-    'Empty room stripped back to bare floorboards before renovation',
-    'Built-in alcove shelving painted deep red as a feature',
-    'Close-up of ornamental ceiling moulding under repair',
-    'Wood bed frame being assembled in a newly renovated room',
-  ],
-};
-
-const GALLERY_DIR = path.join(process.cwd(), 'public/img/gallery');
-
 const categories = services
-  .filter((s) => ALT_TEXT[s.id]?.length)
-  .map((s) => {
-    const files = readdirSync(path.join(GALLERY_DIR, s.id)).filter(
-      (f) => f.endsWith('.jpg') && !f.includes('-thumb'),
-    );
-    const count = files.length;
-    return {
-      slug: s.id,
-      navLabel: s.data.navLabel,
-      count,
-      alts: ALT_TEXT[s.id].slice(0, count),
-    };
-  })
-  .filter((c) => c.count > 0);
+  .map((s) => ({
+    slug: s.id,
+    navLabel: s.data.navLabel,
+    photos: getGalleryPhotos(s.id),
+  }))
+  .filter((c) => c.photos.length > 0);
 
 const jsonLd = graph(
   businessSchema(),
@@ -139,34 +61,30 @@ const jsonLd = graph(
             </a>
           </div>
           <ul class="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-            {Array.from({ length: cat.count }, (_, i) => i + 1).map((n) => {
-              const base = `/img/gallery/${cat.slug}/${cat.slug}-${String(n).padStart(2, '0')}`;
-              const alt = cat.alts[n - 1] ?? cat.navLabel;
-              return (
-                <li>
-                  <button
-                    type="button"
-                    class="lightbox-trigger group block w-full overflow-hidden rounded-lg bg-ink-100"
-                    data-full-jpg={`${base}.jpg`}
-                    data-full-webp={`${base}.webp`}
-                    data-alt={alt}
-                    aria-label={`Open larger photo: ${alt}`}
-                  >
-                    <picture>
-                      <source srcset={`${base}-thumb.webp`} type="image/webp" />
-                      <img
-                        src={`${base}-thumb.jpg`}
-                        alt={alt}
-                        loading="lazy"
-                        width="640"
-                        height="640"
-                        class="aspect-square w-full object-cover transition-transform duration-200 group-hover:scale-105"
-                      />
-                    </picture>
-                  </button>
-                </li>
-              );
-            })}
+            {cat.photos.map((photo) => (
+              <li>
+                <button
+                  type="button"
+                  class="lightbox-trigger group block w-full overflow-hidden rounded-lg bg-ink-100"
+                  data-full-jpg={`${photo.base}.jpg`}
+                  data-full-webp={`${photo.base}.webp`}
+                  data-alt={photo.alt}
+                  aria-label={`Open larger photo: ${photo.alt}`}
+                >
+                  <picture>
+                    <source srcset={`${photo.base}-thumb.webp`} type="image/webp" />
+                    <img
+                      src={`${photo.base}-thumb.jpg`}
+                      alt={photo.alt}
+                      loading="lazy"
+                      width="640"
+                      height="640"
+                      class="aspect-square w-full object-cover transition-transform duration-200 group-hover:scale-105"
+                    />
+                  </picture>
+                </button>
+              </li>
+            ))}
           </ul>
         </section>
       ))

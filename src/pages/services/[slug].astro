@@ -9,6 +9,7 @@ import Button from '../../components/Button.astro';
 import { CONTACT } from '../../config';
 import { waLink, waForService } from '../../lib/whatsapp';
 import { graph, businessSchema, serviceSchema, faqSchema, breadcrumbSchema } from '../../lib/schema';
+import { getGalleryPhotos } from '../../lib/gallery';
 
 export const getStaticPaths: GetStaticPaths = async () => {
   const services = await getCollection('services', ({ data }) => !data.draft);
@@ -28,6 +29,7 @@ const projects = (await getCollection('projects', ({ data }) => !data.draft)).fi
   p.data.services.includes(entry.id),
 );
 
+const photos = getGalleryPhotos(entry.id, 6);
 const path = `/services/${entry.id}/`;
 const waMessage = waForService(entry.data.waPhrase);
 
@@ -76,6 +78,34 @@ const jsonLd = graph(
         </a>
       </div>
     </header>
+
+    {
+      photos.length > 0 && (
+        <ul class="mt-10 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {photos.map((photo) => (
+            <li class={photos.length === 1 ? 'col-span-2 sm:col-span-2' : ''}>
+              <a
+                href={`/gallery/#${entry.id}`}
+                class="group block overflow-hidden rounded-lg bg-ink-100"
+                aria-label={`See more photos: ${entry.data.navLabel}`}
+              >
+                <picture>
+                  <source srcset={`${photo.base}-thumb.webp`} type="image/webp" />
+                  <img
+                    src={`${photo.base}-thumb.jpg`}
+                    alt={photo.alt}
+                    loading="lazy"
+                    width="640"
+                    height="480"
+                    class="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+                  />
+                </picture>
+              </a>
+            </li>
+          ))}
+        </ul>
+      )
+    }
 
     <div class="prose-trade mt-12 max-w-3xl">
       <Content />
