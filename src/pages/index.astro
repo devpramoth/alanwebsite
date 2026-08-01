@@ -1,0 +1,328 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import { CONTACT, DISTRICTS, HANDYMAN_MINIMUM_HOURS } from '../config';
+import { waLink, WA_DEFAULT } from '../lib/whatsapp';
+import { graph, businessSchema, faqSchema } from '../lib/schema';
+
+const services = (await getCollection('services', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const projects = (await getCollection('projects', ({ data }) => !data.draft && data.featured)).slice(
+  0,
+  3,
+);
+
+const credentials = [
+  { label: 'British born', detail: '25 years living in Berlin' },
+  { label: 'Qualified electrician', detail: 'I do the electrics myself' },
+  { label: '15+ years', detail: 'Shopfitting and renovation' },
+  { label: 'Tiling specialist', detail: 'A mate who does nothing else' },
+];
+
+const process = [
+  {
+    step: '1',
+    title: 'Show me the job',
+    body: `Send photos on WhatsApp, or we do a quick video call. If it needs eyes on it, I come round.`,
+  },
+  {
+    step: '2',
+    title: 'You get a plan and a price',
+    body: `What it involves, what it costs, how long it takes. Told to you before it starts, not in week two.`,
+  },
+  {
+    step: '3',
+    title: 'I do the work',
+    body: `Planned, run and finished properly — including the last ten per cent everyone else leaves.`,
+  },
+];
+
+const faqs = [
+  {
+    q: 'Do you speak English?',
+    a: "Yes. I'm British and I've lived in Berlin 25 years, so you get the job explained in plain English and sorted out in German where it has to be.",
+  },
+  {
+    q: 'Do you do plumbing?',
+    a: "Some of it. I'll fit a shower, a toilet, a basin or new taps onto the connections that are already there. What I don't do is move the pipes or the drainage to a new position — that's a plumber's job, and I'll get one in.",
+  },
+  {
+    q: 'Is there a minimum charge for small jobs?',
+    a: `General handyman work has a ${HANDYMAN_MINIMUM_HOURS}-hour minimum. Bigger renovation work I price by the job, not the hour, once I've seen it.`,
+  },
+  {
+    q: 'Which parts of Berlin do you cover?',
+    a: 'Berlin and just outside it. Further out, ask me.',
+  },
+];
+
+const catalog = services.map((s) => ({
+  name: s.data.navLabel,
+  description: s.data.summary,
+  path: `/services/${s.id}/`,
+}));
+
+const jsonLd = graph(businessSchema({ catalog }), faqSchema(faqs));
+---
+
+<BaseLayout
+  title="English Handyman Berlin | Renovation, Electrics & Fit-Out"
+  description="English-speaking handyman and renovation in Berlin. Qualified electrician, 15+ years in shopfitting and renovation. Bathrooms, kitchens, tiling, drywall and full flat refits."
+  canonical="/"
+  waMessage={WA_DEFAULT}
+  jsonLd={jsonLd}
+>
+  {/* ---------------------------------------------------------------- Hero */}
+  <section class="bg-ink-950 text-white">
+    <div class="container-page grid gap-10 py-16 lg:grid-cols-[1.1fr_1fr] lg:items-center lg:gap-12 lg:py-28">
+      <div>
+        <h1 class="max-w-4xl font-display text-4xl font-extrabold leading-[1.05] sm:text-5xl lg:text-6xl">
+          English handyman in Berlin
+        </h1>
+
+        <p class="mt-5 max-w-2xl font-display text-xl font-semibold text-accent-500 sm:text-2xl">
+          Building your dreams and fixing your nightmares
+        </p>
+
+        <p class="mt-6 max-w-2xl text-[1.0625rem] leading-relaxed text-ink-300 sm:text-lg">
+          British, twenty-five years in Berlin, and a qualified electrician with fifteen years of
+          shopfitting and renovation behind me. I'll take on the whole flat, or just sort out the one
+          thing that's been annoying you since you moved in.
+        </p>
+
+        <div class="mt-9 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+          <Button href={waLink(WA_DEFAULT)} variant="whatsapp" size="lg" external event="WhatsApp Click">
+            Message on WhatsApp
+          </Button>
+          <Button href="/contact/" variant="primary" size="lg" event="Quote Click">
+            Get a quote
+          </Button>
+          <a
+            href={`tel:${CONTACT.phoneE164}`}
+            class="plausible-event-name=Call+Click inline-flex items-center justify-center rounded-md border-2 border-ink-700 px-6 py-3.5 font-semibold text-white transition-colors hover:border-white"
+          >
+            {CONTACT.phoneDisplay}
+          </a>
+        </div>
+      </div>
+
+      <a href="/gallery/" class="group block overflow-hidden rounded-xl lg:order-last" aria-label="See more photos in the gallery">
+        <picture>
+          <source
+            srcset="/img/gallery/kitchen-fitting-berlin/kitchen-fitting-berlin-01.webp"
+            type="image/webp"
+          />
+          <img
+            src="/img/gallery/kitchen-fitting-berlin/kitchen-fitting-berlin-01.jpg"
+            alt="White shaker kitchen with patterned tile splashback and oak worktop, fitted in a Berlin Altbau flat"
+            width="1200"
+            height="1600"
+            fetchpriority="high"
+            class="aspect-[4/3] w-full object-cover transition-transform duration-300 group-hover:scale-105"
+          />
+        </picture>
+      </a>
+    </div>
+  </section>
+
+  {/* -------------------------------------------------------- Credentials */}
+  <section class="border-b border-ink-200 bg-ink-50">
+    <div class="container-page grid grid-cols-2 gap-x-6 gap-y-7 py-9 lg:grid-cols-4">
+      {
+        credentials.map((c) => (
+          <div>
+            <p class="font-display text-base font-bold text-ink-950">{c.label}</p>
+            <p class="mt-1 text-sm leading-snug text-ink-600">{c.detail}</p>
+          </div>
+        ))
+      }
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------ Services */}
+  <section class="container-page py-16 lg:py-24">
+    <div class="max-w-3xl">
+      <h2 class="font-display text-3xl font-extrabold text-ink-950 lg:text-4xl">What I do</h2>
+      <p class="mt-4 text-lg leading-relaxed text-ink-600">
+        Planning, ordering, coordinating and doing the work — bathrooms, kitchens, tiling, drywall,
+        electrics, floors and paint. That includes fitting a shower, toilet or basin onto the
+        connections already there. Moving pipework and drainage is a plumber's job, and so is
+        anything structural, so I bring the right person in rather than pretending to cover it.
+      </p>
+    </div>
+
+    <ul class="mt-12 grid gap-px overflow-hidden rounded-lg bg-ink-200 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        services.map((s) => (
+          <li class="bg-white">
+            <a href={`/services/${s.id}/`} class="group flex h-full flex-col p-6 transition-colors hover:bg-ink-50">
+              <h3 class="font-display text-lg font-bold text-ink-950 group-hover:text-accent-700">
+                {s.data.navLabel}
+              </h3>
+              <p class="mt-2.5 text-[0.95rem] leading-relaxed text-ink-600">{s.data.summary}</p>
+              <span class="mt-4 text-sm font-semibold text-accent-700" aria-hidden="true">
+                Read more &rarr;
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-8 text-ink-600">
+      Small jobs too — shelves up, flat-pack built, things repaired, and the list that never gets
+      done. General handyman work has a {HANDYMAN_MINIMUM_HOURS}-hour minimum.
+      <a href="/services/" class="ml-1 font-semibold text-accent-700 underline underline-offset-4">
+        All services
+      </a>
+    </p>
+  </section>
+
+  {/* ------------------------------------------------------------- Process */}
+  <section class="bg-ink-950 text-white">
+    <div class="container-page py-16 lg:py-24">
+      <h2 class="max-w-3xl font-display text-3xl font-extrabold lg:text-4xl">
+        Three steps to get started
+      </h2>
+
+      <ol class="mt-12 grid gap-10 lg:grid-cols-3 lg:gap-12">
+        {
+          process.map((p) => (
+            <li class="flex gap-5 lg:block">
+              <span
+                class="flex size-11 shrink-0 items-center justify-center rounded-full border-2 border-accent-500 font-display text-lg font-extrabold text-accent-500 lg:size-14 lg:text-2xl"
+                aria-hidden="true"
+              >
+                {p.step}
+              </span>
+              <div class="lg:mt-5">
+                <h3 class="font-display text-xl font-bold">{p.title}</h3>
+                <p class="mt-2 leading-relaxed text-ink-300">{p.body}</p>
+              </div>
+            </li>
+          ))
+        }
+      </ol>
+
+      <div class="mt-12 flex flex-col gap-3 sm:flex-row">
+        <Button href={waLink(WA_DEFAULT)} variant="whatsapp" size="lg" external event="WhatsApp Click">
+          Start with a photo
+        </Button>
+        <Button href="/contact/" variant="primary" size="lg" event="Quote Click">
+          Get a quote
+        </Button>
+      </div>
+    </div>
+  </section>
+
+  {/* --------------------------------------------------------------- Areas */}
+  <section class="container-page py-16 lg:py-24">
+    <div class="max-w-3xl">
+      <h2 class="font-display text-3xl font-extrabold text-ink-950 lg:text-4xl">Where I work</h2>
+      <p class="mt-4 text-lg leading-relaxed text-ink-600">
+        Berlin and just outside it, further afield if it's worth the trip. Most of my work is in the
+        Altbau belt, where no wall is straight and no two flats are the same.
+      </p>
+    </div>
+
+    <ul class="mt-10 flex flex-wrap gap-3">
+      {
+        DISTRICTS.map((d) => (
+          <li>
+            <a
+              href={`/areas/${d.slug}/`}
+              class="inline-flex rounded-full border-2 border-ink-200 px-5 py-2.5 font-semibold text-ink-800 transition-colors hover:border-ink-950 hover:bg-ink-50"
+            >
+              {d.name}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </section>
+
+  {/* ------------------------------------------------------------ Projects */}
+  {
+    projects.length > 0 && (
+      <section class="container-page pb-16 lg:pb-24">
+        <div class="flex flex-wrap items-end justify-between gap-4">
+          <h2 class="font-display text-3xl font-extrabold text-ink-950 lg:text-4xl">Recent work</h2>
+          <a href="/gallery/" class="font-semibold text-accent-700 underline underline-offset-4">
+            See the gallery
+          </a>
+        </div>
+        <ul class="mt-10 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+          {projects.map((p) => (
+            <li>
+              <a href={`/projects/${p.id}/`} class="group block">
+                <h3 class="font-display text-lg font-bold text-ink-950 group-hover:text-accent-700">
+                  {p.data.title}
+                </h3>
+                <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-600">{p.data.summary}</p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      </section>
+    )
+  }
+
+  {/* ----------------------------------------------------------------- FAQ */}
+  <section class="border-t border-ink-200 bg-ink-50">
+    <div class="container-page py-16 lg:py-24">
+      <h2 class="font-display text-3xl font-extrabold text-ink-950 lg:text-4xl">
+        Common questions
+      </h2>
+      <dl class="mt-10 max-w-3xl divide-y divide-ink-200 border-y border-ink-200">
+        {
+          faqs.map((f) => (
+            <div class="py-6">
+              <dt class="font-display text-lg font-bold text-ink-950">{f.q}</dt>
+              <dd class="mt-2 leading-relaxed text-ink-600">{f.a}</dd>
+            </div>
+          ))
+        }
+      </dl>
+      <p class="mt-8">
+        <a href="/faq/" class="font-semibold text-accent-700 underline underline-offset-4">
+          More questions answered
+        </a>
+      </p>
+    </div>
+  </section>
+
+  {/* ------------------------------------------------------------ CTA band */}
+  <section class="bg-accent-600">
+    <div class="container-page flex flex-col items-start gap-8 py-14 lg:flex-row lg:items-center lg:justify-between">
+      <div class="max-w-2xl">
+        <h2 class="font-display text-3xl font-extrabold text-white lg:text-4xl">
+          Send me a photo and tell me what needs doing
+        </h2>
+        <p class="mt-3 text-lg leading-relaxed text-accent-50">
+          A picture and a sentence is usually enough for me to say whether it's a morning or a
+          fortnight.
+        </p>
+      </div>
+      <div class="flex shrink-0 flex-col gap-3 sm:flex-row">
+        <Button
+          href={waLink(WA_DEFAULT)}
+          variant="whatsapp"
+          size="lg"
+          external
+          event="WhatsApp Click"
+        >
+          WhatsApp me
+        </Button>
+        <a
+          href="/contact/"
+          class="plausible-event-name=Quote+Click inline-flex items-center justify-center rounded-md bg-white px-6 py-3.5 font-semibold text-ink-950 transition-colors hover:bg-accent-50"
+        >
+          Get a quote
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

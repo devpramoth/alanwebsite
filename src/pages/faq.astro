@@ -1,0 +1,132 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { HANDYMAN_MINIMUM_HOURS } from '../config';
+import { graph, businessSchema, faqSchema, breadcrumbSchema } from '../lib/schema';
+
+const groups = [
+  {
+    heading: 'Working with me',
+    faqs: [
+      {
+        q: 'Do you speak English?',
+        a: "Yes. I'm British and I've lived in Berlin 25 years. You get the job explained in plain English, and dealt with in German where it has to be — Hausverwaltung, suppliers, neighbours.",
+      },
+      {
+        q: 'Do you do plumbing?',
+        a: "Some of it. I'll fit a shower, a bath, a toilet, a basin or new taps onto the pipework and drainage that's already there, and that covers most bathrooms. What I don't do is move supply pipes or drainage to a new position. Once the soil pipe has to shift, that's a plumber's job — I'll get one in and work around them.",
+      },
+      {
+        q: 'So can you do my whole bathroom or not?',
+        a: "If the layout stays roughly where it is, yes — strip-out, electrics, substrate, tanking, tiling, and fitting the suite at the end. If you want the toilet on the other wall, a plumber does the pipework and drainage first and I do everything either side of it. Either way it's one job on one schedule, and you ring me.",
+      },
+      {
+        q: 'Can you handle a whole renovation, or just individual jobs?',
+        a: "Both. I take on complete flat renovations start to finish, and I'll also come out for an afternoon of small stuff. Same approach either way — I look at it first, then tell you what it really involves.",
+      },
+      {
+        q: 'Who does the tiling?',
+        a: 'A mate who tiles full time. On big porcelain in a room where nothing is square, you can spot the difference between a specialist and an occasional tiler from the doorway.',
+      },
+    ],
+  },
+  {
+    heading: 'Quotes, cost and timing',
+    faqs: [
+      {
+        q: 'Can you give me a price over the phone?',
+        a: "Not a real one. Berlin flats vary far too much — the substrate, the access, the state of the electrics and whatever the last owner did behind the plaster all change the job. Send a photo and a description and I can give you a rough sense of scale. A proper price needs me in the room.",
+      },
+      {
+        q: 'What affects the cost most?',
+        a: "Usually what's behind the surface, not the finish you pick. The state of the substrate, whether walls and floors need levelling before anything can start, what the existing circuits are like, how hard it is to get materials in and waste out, and how much has to be put right before the new work begins.",
+      },
+      {
+        q: 'Is there a minimum charge for small jobs?',
+        a: `General handyman work has a ${HANDYMAN_MINIMUM_HOURS}-hour minimum, so it's worth saving a few small jobs up for one visit rather than booking them separately.`,
+      },
+      {
+        q: 'How far ahead do you book?',
+        a: "Depends on the season and the size of the job. Ask me and I'll tell you when I could actually start, rather than holding a date I can't keep.",
+      },
+    ],
+  },
+  {
+    heading: 'Practicalities in Berlin flats',
+    faqs: [
+      {
+        q: 'Which parts of Berlin do you cover?',
+        a: "Berlin and just outside it, most of it in the Altbau belt. Further out, ask — I'll tell you straight whether the travel makes sense for the size of the job.",
+      },
+      {
+        q: 'Do I need permission from my landlord or the Hausverwaltung?',
+        a: "For anything structural, or anything that changes the flat rather than just its finishes, usually yes — and in an owner-occupied block the WEG may have to agree too. Moving drainage is the classic one. I'll tell you where I think you need consent. Getting it is your side of the fence, but I'll happily explain the work in German.",
+      },
+      {
+        q: 'Can you work at weekends or in the evening?',
+        a: "Noisy work is limited by the building rules. Most Hausordnungen protect a quiet spell in the middle of the day and again in the evening, and Sundays are out for anything loud. I plan the noisy stages around that so you don't fall out with your neighbours.",
+      },
+      {
+        q: 'How much mess will there be?',
+        a: "Renovation is dusty, and Altbau with lime plaster is dustier than people expect. I sheet up, seal off the rooms I'm not working in, and clear up at the end rather than leaving it for you.",
+      },
+    ],
+  },
+];
+
+const allFaqs = groups.flatMap((g) => g.faqs);
+
+const jsonLd = graph(
+  businessSchema(),
+  faqSchema(allFaqs),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'FAQ', path: '/faq/' },
+  ]),
+);
+---
+
+<BaseLayout
+  title="FAQ | English Handyman Berlin"
+  description="Common questions about renovation and handyman work in Berlin — quotes, what affects cost, minimum bookings, Hausverwaltung permission, noise rules and what I don't cover."
+  canonical="/faq/"
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs trail={[{ name: 'FAQ', path: '/faq/' }]} />
+
+  <div class="container-page pt-8">
+    <header class="max-w-3xl">
+      <h1 class="font-display text-3xl font-extrabold leading-tight text-ink-950 sm:text-4xl lg:text-5xl">
+        Questions I get asked
+      </h1>
+      <p class="mt-5 text-lg leading-relaxed text-ink-600">
+        If yours isn't here, send it over. A straight question gets a straight answer, including
+        when the answer is that it's not a job for me.
+      </p>
+    </header>
+
+    <div class="mt-14 max-w-3xl space-y-14">
+      {
+        groups.map((group) => (
+          <section>
+            <h2 class="font-display text-2xl font-extrabold text-ink-950">{group.heading}</h2>
+            <dl class="mt-6 divide-y divide-ink-200 border-y border-ink-200">
+              {group.faqs.map((f) => (
+                <div class="py-6">
+                  <dt class="font-display text-lg font-bold text-ink-950">{f.q}</dt>
+                  <dd class="mt-2 leading-relaxed text-ink-600">{f.a}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+        ))
+      }
+    </div>
+  </div>
+
+  <CtaBand
+    heading="Still not sure?"
+    body="Send a photo and a sentence. If it's not something I cover, I'll say so and point you at who does."
+  />
+</BaseLayout>

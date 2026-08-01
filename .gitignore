@@ -1,0 +1,11 @@
+node_modules/
+dist/
+.astro/
+.netlify/
+.DS_Store
+*.log
+
+# Source photographs. Originals stay out of git; the processed derivatives in
+# public/img/gallery/ (and, once real per-job case studies exist, public/img/projects/)
+# are committed so builds do not depend on them. Regenerate with `npm run photos`.
+/photos/

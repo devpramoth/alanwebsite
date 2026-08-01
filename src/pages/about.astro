@@ -1,0 +1,97 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import CtaBand from '../components/CtaBand.astro';
+import { PLUMBING } from '../config';
+import { graph, businessSchema, breadcrumbSchema } from '../lib/schema';
+
+const jsonLd = graph(
+  businessSchema(),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'About', path: '/about/' },
+  ]),
+);
+---
+
+<BaseLayout
+  title="About | English Handyman Berlin"
+  description="British, 25 years in Berlin, qualified electrician with 15+ years in shopfitting and renovation. Who you're dealing with, what I cover, and where I bring someone else in."
+  canonical="/about/"
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs trail={[{ name: 'About', path: '/about/' }]} />
+
+  <article class="container-page pt-8">
+    <header class="max-w-3xl">
+      <h1 class="font-display text-3xl font-extrabold leading-tight text-ink-950 sm:text-4xl lg:text-5xl">
+        Building your dreams and fixing your nightmares
+      </h1>
+      <p class="mt-5 text-lg leading-relaxed text-ink-600">
+        British, twenty-five years in Berlin, and a qualified electrician with fifteen years of
+        shopfitting and renovation behind me.
+      </p>
+    </header>
+
+    <div class="prose-trade mt-12 max-w-3xl">
+      {/* TODO: add the owner's name, and a photograph of him on site, once supplied. */}
+      <h2>Who you're actually dealing with</h2>
+      <p>
+        Most people ring me after a bad experience. A quote that doubled. Someone who stopped
+        answering the phone in week three. A kitchen fitted so badly the doors never lined up.
+        It's rarely that the bloke couldn't do the work. It's that nobody was holding the job
+        together, and nobody would give a straight answer in a language they spoke.
+      </p>
+      <p>
+        I'm British, I've been in Berlin twenty-five years, and I'm a qualified electrician with
+        fifteen years of shopfitting and renovation behind me. You get the job explained in plain
+        English, and dealt with in German where it has to be — the Hausverwaltung, the neighbours,
+        the supplier who's lost your order. Shopfitting is where I learned to hit a fixed date and
+        clean up behind myself, because a shop has to open on the day it says it will.
+      </p>
+
+      <h2>One person answering for it</h2>
+      <p>
+        I do the survey, the ordering, the sequencing and the work itself. On a bathroom that means
+        the tiling doesn't start until the substrate is right, and the electrics go in before anyone
+        closes a wall up. Obvious, but it's the thing that goes wrong most.
+      </p>
+      <p>
+        The tiling I hand to a mate who does nothing else. There's a real difference between someone
+        who tiles now and then and someone who tiles every day, and on big porcelain in a room where
+        nothing is square you can see it from the doorway for the next twenty years.
+      </p>
+
+      <h2>Where I stop</h2>
+      <p>
+        On plumbing I do half of it. I'll fit a shower, a toilet, a basin or new taps onto pipework
+        and drainage that's already where it needs to be — that's a normal part of a bathroom for
+        me. What I don't do is {PLUMBING.notDoing}. Once the soil pipe or the supply has to move,
+        that's a plumber, and I'll bring one in and work around them.
+      </p>
+      <p>
+        I don't do architecture or structural engineering at all. Separate disciplines, separate
+        liability, and anyone who tells you different is cutting a corner. Same approach: I get them
+        in at the right point and keep everything running to one schedule, so you're not the one
+        chasing three trades over WhatsApp.
+      </p>
+      <p>
+        Knowing where the line is isn't a limitation. It's why the rest of it lands on time.
+      </p>
+
+      <h2>Berlin flats are their own problem</h2>
+      <p>
+        Twenty-five years here means very little surprises me. Walls out by centimetres rather than
+        millimetres. Floors with sand and rubble fill between the joists. Lime plaster that won't
+        hold a modern fixing. Circuits with no earth. Three-and-a-half metre ceilings with Stuck
+        somebody has already half wrecked. None of it is a disaster, but it changes the price and
+        the timeline, and you're better off hearing it before we start than in week two.
+      </p>
+    </div>
+  </article>
+
+  <CtaBand
+    heading="Tell me what you're dealing with"
+    body="Send a photo and a sentence. I'll tell you whether it's a job for me, and what it involves."
+  />
+</BaseLayout>

@@ -1,0 +1,102 @@
+---
+import '../styles/global.css';
+import { SITE, ANALYTICS } from '../config';
+import { WA_DEFAULT } from '../lib/whatsapp';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import StickyCta from '../components/StickyCta.astro';
+
+interface Props {
+  /** Unique <title>. Written per page — never templated from the H1. */
+  title: string;
+  /** Unique meta description, roughly 140-160 characters. */
+  description: string;
+  /** Absolute path for the canonical URL, e.g. "/services/tiling-berlin/". */
+  canonical: string;
+  /** Site-relative path to a share image. */
+  ogImage?: string;
+  ogType?: 'website' | 'article';
+  /** Pre-filled WhatsApp message for the sticky mobile bar. */
+  waMessage?: string;
+  /** JSON-LD @graph object, built with lib/schema.ts. */
+  jsonLd?: object | null;
+  noindex?: boolean;
+}
+
+const {
+  title,
+  description,
+  canonical,
+  ogImage = '/og-image.png',
+  ogType = 'website',
+  waMessage = WA_DEFAULT,
+  jsonLd = null,
+  noindex = false,
+} = Astro.props;
+
+const canonicalUrl = new URL(canonical, SITE.url).href;
+const ogImageUrl = new URL(ogImage, SITE.url).href;
+---
+
+<!doctype html>
+<html lang={SITE.lang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl} />
+    {noindex && <meta name="robots" content="noindex, follow" />}
+
+    {/* Self-hosted, render-blocking-free. Preloaded so the first paint has real type. */}
+    <link rel="preload" href="/fonts/inter-var.woff2" as="font" type="font/woff2" crossorigin />
+    <link rel="preload" href="/fonts/archivo-var.woff2" as="font" type="font/woff2" crossorigin />
+
+    <meta property="og:type" content={ogType} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:site_name" content={SITE.name} />
+    <meta property="og:locale" content={SITE.locale} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <meta name="theme-color" content="#0b0b0c" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="icon" href="/favicon.ico" sizes="32x32" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    {jsonLd && <script type="application/ld+json" set:html={JSON.stringify(jsonLd)} />}
+
+    {
+      ANALYTICS.enabled && (
+        <script
+          defer
+          data-domain={ANALYTICS.domain}
+          src="https://plausible.io/js/script.tagged-events.js"
+        />
+      )
+    }
+  </head>
+
+  <body>
+    <a
+      href="#main"
+      class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-md focus:bg-ink-950 focus:px-4 focus:py-2 focus:text-white"
+    >
+      Skip to content
+    </a>
+
+    <Header />
+    <main id="main">
+      <slot />
+    </main>
+    <Footer />
+    <StickyCta waMessage={waMessage} />
+  </body>
+</html>

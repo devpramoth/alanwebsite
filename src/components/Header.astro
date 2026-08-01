@@ -1,0 +1,120 @@
+---
+import { CONTACT } from '../config';
+
+const nav = [
+  { href: '/services/', label: 'Services' },
+  { href: '/gallery/', label: 'Gallery' },
+  { href: '/areas/', label: 'Areas' },
+  { href: '/about/', label: 'About' },
+  { href: '/faq/', label: 'FAQ' },
+  { href: '/contact/', label: 'Contact' },
+];
+
+const path = Astro.url.pathname;
+const isCurrent = (href: string) => path === href || (href !== '/' && path.startsWith(href));
+---
+
+<header class="sticky top-0 z-40 border-b border-ink-200 bg-white/95 backdrop-blur-sm">
+  <div class="container-page flex h-16 items-center justify-between gap-4 lg:h-20">
+    {/*
+      Inline SVG mark plus live type: sharp at every DPR, no extra request,
+      and the wordmark never reads as clipart.
+    */}
+    <a href="/" class="flex shrink-0 items-center gap-2.5" aria-label={`${'English Handyman Berlin'} — home`}>
+      <svg
+        viewBox="0 0 100 100"
+        aria-hidden="true"
+        class="h-9 w-9 shrink-0 lg:h-10 lg:w-10"
+      >
+        <rect width="100" height="100" rx="22" fill="#0b0b0c" />
+        <g transform="rotate(-45 50 50)">
+          <rect x="27" y="14" width="46" height="20" rx="8" fill="#ffffff" />
+          <rect x="42" y="30" width="16" height="46" rx="8" fill="#ffffff" />
+          <circle cx="50" cy="78" r="7.5" fill="#ea580c" />
+        </g>
+      </svg>
+      <span class="flex flex-col leading-none">
+        <span class="font-display text-[1.05rem] font-extrabold tracking-tight text-ink-950 lg:text-xl">
+          English Handyman
+        </span>
+        <span class="font-display text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-accent-600">
+          Berlin
+        </span>
+      </span>
+    </a>
+
+    <nav class="hidden lg:block" aria-label="Main">
+      <ul class="flex items-center gap-7">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                aria-current={isCurrent(item.href) ? 'page' : undefined}
+                class:list={[
+                  'text-[0.95rem] font-medium transition-colors hover:text-accent-700',
+                  isCurrent(item.href) ? 'text-accent-700' : 'text-ink-700',
+                ]}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <a
+      href={`tel:${CONTACT.phoneE164}`}
+      class="plausible-event-name=Call+Click hidden shrink-0 rounded-md bg-ink-950 px-4 py-2.5 text-[0.95rem] font-semibold text-white transition-colors hover:bg-ink-800 lg:inline-flex"
+    >
+      {CONTACT.phoneDisplay}
+    </a>
+
+    <button
+      type="button"
+      id="nav-toggle"
+      class="-mr-2 inline-flex items-center justify-center rounded-md p-2 text-ink-900 lg:hidden"
+      aria-expanded="false"
+      aria-controls="mobile-nav"
+      aria-label="Open menu"
+    >
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M4 7h16M4 12h16M4 17h16" stroke-linecap="round"></path>
+      </svg>
+    </button>
+  </div>
+
+  <nav id="mobile-nav" class="hidden border-t border-ink-200 lg:hidden" aria-label="Main">
+    <ul class="container-page py-2">
+      {
+        nav.map((item) => (
+          <li class="border-b border-ink-100 last:border-0">
+            <a
+              href={item.href}
+              aria-current={isCurrent(item.href) ? 'page' : undefined}
+              class:list={[
+                'block py-3.5 font-medium',
+                isCurrent(item.href) ? 'text-accent-700' : 'text-ink-900',
+              ]}
+            >
+              {item.label}
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+  </nav>
+</header>
+
+<script>
+  const toggle = document.getElementById('nav-toggle');
+  const menu = document.getElementById('mobile-nav');
+
+  toggle?.addEventListener('click', () => {
+    const open = toggle.getAttribute('aria-expanded') === 'true';
+    toggle.setAttribute('aria-expanded', String(!open));
+    toggle.setAttribute('aria-label', open ? 'Open menu' : 'Close menu');
+    menu?.classList.toggle('hidden', open);
+  });
+</script>

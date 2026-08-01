@@ -1,0 +1,66 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { graph, businessSchema, breadcrumbSchema } from '../../lib/schema';
+
+const areas = (await getCollection('areas', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const jsonLd = graph(
+  businessSchema(),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Areas', path: '/areas/' },
+  ]),
+);
+---
+
+<BaseLayout
+  title="Areas I Cover in Berlin | English Handyman Berlin"
+  description="Renovation and handyman work across Berlin — Neukölln, Kreuzberg, Mitte, Prenzlauer Berg, Friedrichshain and Charlottenburg. Berlin and just outside, further out on request."
+  canonical="/areas/"
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs trail={[{ name: 'Areas', path: '/areas/' }]} />
+
+  <div class="container-page pt-8">
+    <header class="max-w-3xl">
+      <h1 class="font-display text-3xl font-extrabold leading-tight text-ink-950 sm:text-4xl lg:text-5xl">
+        Where I work
+      </h1>
+      <p class="mt-5 text-lg leading-relaxed text-ink-600">
+        Berlin and just outside it, further afield if it's worth the trip. Every district has its
+        own building stock and its own recurring problems, so the pages below say what I actually
+        run into rather than repeating the same paragraph six times.
+      </p>
+    </header>
+
+    <ul class="mt-12 grid gap-px overflow-hidden rounded-lg bg-ink-200 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        areas.map((a) => (
+          <li class="bg-white">
+            <a href={`/areas/${a.id}/`} class="group flex h-full flex-col p-7 hover:bg-ink-50">
+              <h2 class="font-display text-lg font-bold text-ink-950 group-hover:text-accent-700">
+                {a.data.name}
+              </h2>
+              <p class="mt-2.5 text-[0.95rem] leading-relaxed text-ink-600">{a.data.summary}</p>
+              <span class="mt-4 text-sm font-semibold text-accent-700" aria-hidden="true">
+                Read more &rarr;
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <p class="mt-10 max-w-3xl leading-relaxed text-ink-600">
+      Not on the list? I work across the rest of the city too — these are just the districts I'm in
+      most often. Outside Berlin, ask and I'll tell you whether it's worth the travel.
+    </p>
+  </div>
+
+  <CtaBand />
+</BaseLayout>

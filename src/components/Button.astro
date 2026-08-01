@@ -1,0 +1,52 @@
+---
+interface Props {
+  href: string;
+  variant?: 'primary' | 'whatsapp' | 'outline' | 'ghost';
+  size?: 'md' | 'lg';
+  /** Plausible tagged-event name, e.g. "WhatsApp Click". Spaces are encoded. */
+  event?: string;
+  external?: boolean;
+  class?: string;
+  'aria-label'?: string;
+}
+
+const {
+  href,
+  variant = 'primary',
+  size = 'md',
+  event,
+  external = false,
+  class: className = '',
+  ...rest
+} = Astro.props;
+
+const base =
+  'inline-flex items-center justify-center gap-2 rounded-md font-semibold ' +
+  'transition-colors duration-150 text-center';
+
+const variants = {
+  // White on accent-600 is 5.18:1 — AA for normal text.
+  primary: 'bg-accent-600 text-white hover:bg-accent-700',
+  // Brand green cannot carry white text accessibly, so text is near-black (9.9:1).
+  whatsapp: 'bg-whatsapp text-ink-950 hover:bg-whatsapp-dark',
+  outline: 'border-2 border-ink-300 text-ink-900 hover:border-ink-900 hover:bg-ink-50',
+  ghost: 'text-ink-900 underline underline-offset-4 hover:text-accent-700',
+};
+
+const sizes = {
+  md: 'px-5 py-2.5 text-[0.95rem]',
+  lg: 'px-6 py-3.5 text-base',
+};
+
+const eventClass = event ? ` plausible-event-name=${event.replace(/ /g, '+')}` : '';
+const cls = `${base} ${variants[variant]} ${variant === 'ghost' ? '' : sizes[size]} ${className}${eventClass}`;
+---
+
+<a
+  href={href}
+  class={cls}
+  {...external ? { target: '_blank', rel: 'noopener' } : {}}
+  {...rest}
+>
+  <slot />
+</a>

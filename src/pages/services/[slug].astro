@@ -1,0 +1,134 @@
+---
+import type { GetStaticPaths } from 'astro';
+import { getCollection, render } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import FaqList from '../../components/FaqList.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import Button from '../../components/Button.astro';
+import { CONTACT } from '../../config';
+import { waLink, waForService } from '../../lib/whatsapp';
+import { graph, businessSchema, serviceSchema, faqSchema, breadcrumbSchema } from '../../lib/schema';
+
+export const getStaticPaths: GetStaticPaths = async () => {
+  const services = await getCollection('services', ({ data }) => !data.draft);
+  return services.map((entry) => ({ params: { slug: entry.id }, props: { entry } }));
+};
+
+const { entry } = Astro.props;
+const { Content } = await render(entry);
+
+const allServices = await getCollection('services', ({ data }) => !data.draft);
+const related = entry.data.related
+  .map((slug) => allServices.find((s) => s.id === slug))
+  .filter((s): s is (typeof allServices)[number] => Boolean(s));
+
+// Projects that used this service. Empty until photos land in phase 4.
+const projects = (await getCollection('projects', ({ data }) => !data.draft)).filter((p) =>
+  p.data.services.includes(entry.id),
+);
+
+const path = `/services/${entry.id}/`;
+const waMessage = waForService(entry.data.waPhrase);
+
+const jsonLd = graph(
+  businessSchema(),
+  serviceSchema({
+    name: entry.data.title,
+    description: entry.data.summary,
+    path,
+  }),
+  faqSchema(entry.data.faqs),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services/' },
+    { name: entry.data.navLabel, path },
+  ]),
+);
+---
+
+<BaseLayout
+  title={entry.data.metaTitle}
+  description={entry.data.metaDescription}
+  canonical={path}
+  waMessage={waMessage}
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs trail={[{ name: 'Services', path: '/services/' }, { name: entry.data.navLabel, path }]} />
+
+  <article class="container-page pb-4 pt-8">
+    <header class="max-w-3xl">
+      <h1 class="font-display text-3xl font-extrabold leading-tight text-ink-950 sm:text-4xl lg:text-5xl">
+        {entry.data.title}
+      </h1>
+      <p class="mt-5 text-lg leading-relaxed text-ink-600">{entry.data.summary}</p>
+
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <Button href={waLink(waMessage)} variant="whatsapp" external event="WhatsApp Click">
+          Ask about this on WhatsApp
+        </Button>
+        <Button href="/contact/" variant="primary" event="Quote Click">Get a quote</Button>
+        <a
+          href={`tel:${CONTACT.phoneE164}`}
+          class="plausible-event-name=Call+Click inline-flex items-center justify-center rounded-md border-2 border-ink-300 px-5 py-2.5 text-[0.95rem] font-semibold text-ink-900 transition-colors hover:border-ink-900"
+        >
+          {CONTACT.phoneDisplay}
+        </a>
+      </div>
+    </header>
+
+    <div class="prose-trade mt-12 max-w-3xl">
+      <Content />
+    </div>
+
+    <div class="max-w-3xl">
+      <FaqList faqs={entry.data.faqs} />
+    </div>
+
+    {
+      projects.length > 0 && (
+        <section class="mt-16">
+          <h2 class="font-display text-2xl font-extrabold text-ink-950 lg:text-3xl">
+            Jobs like this
+          </h2>
+          <ul class="mt-8 grid gap-8 sm:grid-cols-2 lg:grid-cols-3">
+            {projects.slice(0, 3).map((p) => (
+              <li>
+                <a href={`/projects/${p.id}/`} class="group block">
+                  <h3 class="font-display text-lg font-bold text-ink-950 group-hover:text-accent-700">
+                    {p.data.title}
+                  </h3>
+                  <p class="mt-2 text-[0.95rem] leading-relaxed text-ink-600">{p.data.summary}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+
+    {
+      related.length > 0 && (
+        <section class="mt-16">
+          <h2 class="font-display text-2xl font-extrabold text-ink-950 lg:text-3xl">
+            Often part of the same job
+          </h2>
+          <ul class="mt-8 grid gap-px overflow-hidden rounded-lg bg-ink-200 sm:grid-cols-3">
+            {related.map((s) => (
+              <li class="bg-white">
+                <a href={`/services/${s.id}/`} class="group flex h-full flex-col p-6 hover:bg-ink-50">
+                  <h3 class="font-display text-base font-bold text-ink-950 group-hover:text-accent-700">
+                    {s.data.navLabel}
+                  </h3>
+                  <p class="mt-2 text-sm leading-relaxed text-ink-600">{s.data.summary}</p>
+                </a>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )
+    }
+  </article>
+
+  <CtaBand waMessage={waMessage} />
+</BaseLayout>

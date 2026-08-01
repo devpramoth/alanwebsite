@@ -1,0 +1,97 @@
+---
+import { getCollection } from 'astro:content';
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import CtaBand from '../../components/CtaBand.astro';
+import { HANDYMAN_MINIMUM_HOURS } from '../../config';
+import { graph, businessSchema, breadcrumbSchema } from '../../lib/schema';
+
+const services = (await getCollection('services', ({ data }) => !data.draft)).sort(
+  (a, b) => a.data.order - b.data.order,
+);
+
+const jsonLd = graph(
+  businessSchema(),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Services', path: '/services/' },
+  ]),
+);
+---
+
+<BaseLayout
+  title="Services | English Handyman Berlin"
+  description="Renovation and handyman services in Berlin: bathrooms, kitchens, tiling, drywall, electrics, flooring, painting and shop fitting. English-speaking, including sanitary fitting."
+  canonical="/services/"
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs trail={[{ name: 'Services', path: '/services/' }]} />
+
+  <div class="container-page pt-8">
+    <header class="max-w-3xl">
+      <h1 class="font-display text-3xl font-extrabold leading-tight text-ink-950 sm:text-4xl lg:text-5xl">
+        What I do
+      </h1>
+      <p class="mt-5 text-lg leading-relaxed text-ink-600">
+        I plan it, order it, run it and do the work. Where a job needs a plumber for new pipework,
+        or an architect or engineer for anything structural, I bring them in and work around them.
+        Either way you've got one person answering for the job.
+      </p>
+    </header>
+
+    <ul class="mt-12 grid gap-px overflow-hidden rounded-lg bg-ink-200 sm:grid-cols-2 lg:grid-cols-3">
+      {
+        services.map((s) => (
+          <li class="bg-white">
+            <a href={`/services/${s.id}/`} class="group flex h-full flex-col p-7 hover:bg-ink-50">
+              <h2 class="font-display text-lg font-bold text-ink-950 group-hover:text-accent-700">
+                {s.data.navLabel}
+              </h2>
+              <p class="mt-2.5 text-[0.95rem] leading-relaxed text-ink-600">{s.data.summary}</p>
+              <span class="mt-4 text-sm font-semibold text-accent-700" aria-hidden="true">
+                Read more &rarr;
+              </span>
+            </a>
+          </li>
+        ))
+      }
+    </ul>
+
+    <section class="mt-14 max-w-3xl rounded-lg border-2 border-ink-200 p-7">
+      <h2 class="font-display text-xl font-bold text-ink-950">General handyman work</h2>
+      <p class="mt-3 leading-relaxed text-ink-600">
+        Shelves and TVs fixed properly into solid Berlin walls, flat-pack built, sticking doors
+        eased, handles and hinges swapped, and the list of small jobs that's been on the fridge
+        since spring. Minimum booking is {HANDYMAN_MINIMUM_HOURS} hours, so it's worth saving a few
+        up for one visit.
+      </p>
+    </section>
+
+    <section class="mt-14 max-w-3xl">
+      <h2 class="font-display text-xl font-bold text-ink-950">Plumbing: what I will and won't do</h2>
+      <p class="mt-3 leading-relaxed text-ink-600">
+        I fit sanitaryware. A shower, a bath, a toilet, a basin, new taps, waste connections — if
+        the pipework and drainage are already where they need to be, that's a normal part of a
+        bathroom or kitchen for me and I'll do the lot.
+      </p>
+      <p class="mt-3 leading-relaxed text-ink-600">
+        What I won't do is move the plumbing itself. Running new supply lines, relocating a soil
+        pipe, changing where the drainage goes — that's a plumber's work and it wants someone who
+        does it every day. If your job needs it, I'll get a plumber in at first fix, work around
+        them, and keep everything on one schedule so you're not managing two trades.
+      </p>
+    </section>
+
+    <section class="mt-14 max-w-3xl">
+      <h2 class="font-display text-xl font-bold text-ink-950">What I don't do at all</h2>
+      <p class="mt-3 leading-relaxed text-ink-600">
+        Architecture and structural engineering. On anything that involves taking a wall out, those
+        people have to be involved, so I bring them in, build to what they specify and keep the job
+        running to one programme. Being straight about the limits up front is cheaper for everyone
+        than finding out halfway through.
+      </p>
+    </section>
+  </div>
+
+  <CtaBand />
+</BaseLayout>

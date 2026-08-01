@@ -1,0 +1,82 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Breadcrumbs from '../components/Breadcrumbs.astro';
+import Button from '../components/Button.astro';
+import { CONTACT, HANDYMAN_MINIMUM_HOURS } from '../config';
+import { waLink, WA_DEFAULT } from '../lib/whatsapp';
+import { graph, businessSchema, breadcrumbSchema } from '../lib/schema';
+
+const jsonLd = graph(
+  businessSchema(),
+  breadcrumbSchema([
+    { name: 'Home', path: '/' },
+    { name: 'Contact', path: '/contact/' },
+  ]),
+);
+---
+
+<BaseLayout
+  title="Get a Quote | English Handyman Berlin"
+  description="Message me on WhatsApp with a photo and a sentence about what needs doing in your Berlin flat, and I'll tell you what it involves."
+  canonical="/contact/"
+  waMessage={WA_DEFAULT}
+  jsonLd={jsonLd}
+>
+  <Breadcrumbs trail={[{ name: 'Contact', path: '/contact/' }]} />
+
+  <div class="container-page pt-8">
+    <header class="max-w-2xl">
+      <h1 class="font-display text-3xl font-extrabold leading-tight text-ink-950 sm:text-4xl lg:text-5xl">
+        Get a quote
+      </h1>
+      <p class="mt-5 text-lg leading-relaxed text-ink-600">
+        WhatsApp is the fastest way to reach me. Send a photo of the job and a line about what you
+        need — that's usually enough for me to tell you whether it's a quick visit or something
+        bigger.
+      </p>
+
+      <div class="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
+        <Button href={waLink(WA_DEFAULT)} variant="whatsapp" size="lg" external event="WhatsApp Click">
+          Message on WhatsApp
+        </Button>
+        <a
+          href={`tel:${CONTACT.phoneE164}`}
+          class="plausible-event-name=Call+Click inline-flex items-center justify-center rounded-md border-2 border-ink-300 px-6 py-3.5 font-semibold text-ink-900 transition-colors hover:border-ink-900"
+        >
+          Prefer to call? {CONTACT.phoneDisplay}
+        </a>
+      </div>
+    </header>
+
+    <dl class="mt-16 grid max-w-2xl gap-8 border-t border-ink-200 pt-10 sm:grid-cols-2">
+      <div>
+        <dt class="font-semibold text-ink-950">Where I work</dt>
+        <dd class="mt-1 leading-relaxed text-ink-600">Berlin and just outside it. Further out, ask me.</dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-ink-950">Small jobs</dt>
+        <dd class="mt-1 leading-relaxed text-ink-600">
+          General handyman work has a {HANDYMAN_MINIMUM_HOURS}-hour minimum. Worth saving a few up
+          for one visit.
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-ink-950">Plumbing</dt>
+        <dd class="mt-1 leading-relaxed text-ink-600">
+          I fit showers, toilets, basins and taps onto connections that are already there. Moving
+          pipes or drainage is a plumber's job — I'll bring one in.
+        </dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-ink-950">What I don't do</dt>
+        <dd class="mt-1 leading-relaxed text-ink-600">Architecture and structural engineering. I work with both.</dd>
+      </div>
+      <div>
+        <dt class="font-semibold text-ink-950">Language</dt>
+        <dd class="mt-1 leading-relaxed text-ink-600">
+          English throughout, German with your Hausverwaltung when it's needed.
+        </dd>
+      </div>
+    </dl>
+  </div>
+</BaseLayout>
