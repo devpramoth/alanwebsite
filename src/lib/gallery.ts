@@ -28,7 +28,6 @@ export const GALLERY_ALT_TEXT: Record<string, string[]> = {
   'electrician-berlin-english': [
     'Electrical socket back box fitted into a plastered wall mid-renovation',
     'First-fix wiring with three back boxes set into drywall ahead of plastering',
-    'First-fix wiring with bare cable ends and ceiling rose ahead of plastering',
   ],
   'drywall-partition-walls-berlin': ['Fitting tongue-and-groove wood wall panelling'],
   'flooring-parquet-vinyl-berlin': [
@@ -68,6 +67,7 @@ export const GALLERY_ALT_TEXT: Record<string, string[]> = {
     'Finished corner shower enclosure with glass doors and tiled floor',
     'Close-up of a tiled shower floor with a linear drain',
     'Finished bathroom with blue and white star-pattern tiled floor, toilet and sink',
+    'Pipe stub-outs set into cement board for shower valves, with a waste outlet marked out ahead of bathroom tiling',
   ],
   'apartment-renovation-berlin': [
     'Long hallway with mustard-yellow walls and restored wood flooring',

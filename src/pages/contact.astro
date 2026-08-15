@@ -46,6 +46,35 @@ const jsonLd = graph(
           Prefer to call? {CONTACT.phoneDisplay}
         </a>
       </div>
+
+      <p class="mt-6 text-sm leading-relaxed text-ink-500">
+        {
+          CONTACT.email && (
+            <>
+              Prefer email?{' '}
+              <a
+                href={`mailto:${CONTACT.email}`}
+                class="font-semibold text-ink-700 underline underline-offset-4 hover:text-accent-700"
+              >
+                {CONTACT.email}
+              </a>
+              {CONTACT.instagramUrl && ' — or find recent jobs and DM me on '}
+            </>
+          )
+        }
+        {
+          CONTACT.instagramUrl && (
+            <a
+              href={CONTACT.instagramUrl}
+              target="_blank"
+              rel="noopener"
+              class="plausible-event-name=Instagram+Click font-semibold text-ink-700 underline underline-offset-4 hover:text-accent-700"
+            >
+              Instagram @{CONTACT.instagram}
+            </a>
+          )
+        }
+      </p>
     </header>
 
     <dl class="mt-16 grid max-w-2xl gap-8 border-t border-ink-200 pt-10 sm:grid-cols-2">
