@@ -26,7 +26,12 @@ export const GET: APIRoute = async () => {
     `Plumbing scope: ${PLUMBING.doing}. Does not do ${PLUMBING.notDoing} — that is brought in as a plumber. Does not do ${COORDINATED_TRADES.join(' or ')} at all — coordinated in and worked around rather than covered directly.`,
     '',
   );
-  lines.push(`Contact: ${CONTACT.phoneDisplay} (${CONTACT.phoneE164}), WhatsApp preferred.`, '');
+  lines.push(
+    `Contact: ${CONTACT.phoneDisplay} (${CONTACT.phoneE164}), WhatsApp preferred.` +
+      (CONTACT.email ? ` Email: ${CONTACT.email}.` : '') +
+      (CONTACT.instagramUrl ? ` Instagram: @${CONTACT.instagram} (${CONTACT.instagramUrl}).` : ''),
+    '',
+  );
 
   lines.push('## Services', '');
   for (const s of services) {

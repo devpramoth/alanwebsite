@@ -19,11 +19,14 @@ export const CONTACT = {
   /** Digits only, no +, used to build wa.me links. */
   whatsapp: '4917610699483',
   /**
-   * TODO: no mailbox exists on this domain yet (the zone has no MX records).
-   * Set up forwarding in Netlify DNS or supply a personal address, then set this.
+   * A personal mailbox, not one on this domain (the zone has no MX records yet).
    * While null, the UI omits every email touchpoint rather than rendering a dead mailto:.
    */
-  email: null as string | null,
+  email: 'handymanberlin@yahoo.com' as string | null,
+  /** Handle as shown to people, no @. */
+  instagram: 'Handyman_Berlin',
+  /** Full profile URL, used for links and JSON-LD sameAs. */
+  instagramUrl: 'https://www.instagram.com/handyman_berlin/',
 };
 
 export const ANALYTICS = {

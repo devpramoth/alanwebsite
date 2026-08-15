@@ -24,6 +24,7 @@ export function businessSchema(opts?: {
     description: SITE.tagline,
     telephone: CONTACT.phoneE164,
     ...(CONTACT.email ? { email: CONTACT.email } : {}),
+    ...(CONTACT.instagramUrl ? { sameAs: [CONTACT.instagramUrl] } : {}),
     image: abs('/logo.png'),
     address: {
       '@type': 'PostalAddress',
